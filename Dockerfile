@@ -11,6 +11,16 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+
+# Supabase env vars must be present at build time because Next.js
+# inlines NEXT_PUBLIC_* values into the client bundle during `next build`.
+# Railway injects these automatically from your service Variables —
+# for local `docker build`, pass them with --build-arg (see README).
+ARG NEXT_PUBLIC_SUPABASE_URL
+ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
+ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
+ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
+
 # Uses the "standalone" output configured in next.config.ts —
 # produces a minimal server bundle with only the files it needs.
 RUN npm run build
@@ -30,14 +40,15 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# This is where the local JSON data store lives — mount a volume here
-# (see docker-compose.yml) so report data survives container restarts.
-RUN mkdir -p /app/data && chown nextjs:nodejs /app/data
-
 USER nextjs
 
 EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
+
+# Lets Docker/Railway detect a hung process, not just a crashed one —
+# hits the /api/health route, which also confirms Supabase is reachable.
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1
 
 CMD ["node", "server.js"]
