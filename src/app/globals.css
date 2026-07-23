@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+:root {
+  --background: #eef1f4;
+  --foreground: #1a2333;
+
+  --color-bg: #eef1f4;
+  --color-paper: #ffffff;
+  --color-ink: #1a2333;
+  --color-ink-soft: #4c6785;
+  --color-navy: #16233d;
+  --color-navy-2: #223759;
+  --color-amber: #c2703a;
+  --color-amber-soft: #f4e3d6;
+  --color-line: #d7dce2;
+  --color-ok: #2f7d5d;
+  --color-ok-soft: #e3f1ea;
+  --color-warn: #b4472a;
+  --color-warn-soft: #fbede8;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-bg: var(--color-bg);
+  --color-paper: var(--color-paper);
+  --color-ink: var(--color-ink);
+  --color-ink-soft: var(--color-ink-soft);
+  --color-navy: var(--color-navy);
+  --color-navy-2: var(--color-navy-2);
+  --color-amber: var(--color-amber);
+  --color-amber-soft: var(--color-amber-soft);
+  --color-line: var(--color-line);
+  --color-ok: var(--color-ok);
+  --color-ok-soft: var(--color-ok-soft);
+  --color-warn: var(--color-warn);
+  --color-warn-soft: var(--color-warn-soft);
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+.font-display {
+  font-family: "Space Grotesk", system-ui, sans-serif;
+}
+
+.font-data {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+}
+
+@layer components {
+  .input {
+    @apply w-full border border-line rounded-lg px-3 py-2.5 text-sm bg-[#FCFCFD] focus:outline-none focus:ring-2 focus:ring-[#9DB6E0] focus:border-[#9DB6E0];
+  }
+}
